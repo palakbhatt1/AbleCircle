@@ -35,6 +35,7 @@ export interface ApplicationFormData {
   certificateFile: File | null;
   aadhaarFile: File | null;
   medicalFile: File | null;
+  completedFormsFile: File | null;
 }
 
 export interface FormFieldError {

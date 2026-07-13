@@ -4,11 +4,165 @@ import React, { useState, useRef } from 'react';
 import { ApplicationFormData, FormFieldError } from '@/types';
 import Button from '@/components/shared/Button';
 
+interface FileInfo {
+  name: string;
+  size: string;
+  description: string;
+  path: string;
+}
+
+interface Category {
+  id: 'ot' | 'psychology' | 'special-ed' | 'speech';
+  title: string;
+  icon: string;
+  files: FileInfo[];
+}
+
+const TEMPLATE_CATEGORIES: Category[] = [
+  {
+    id: 'ot',
+    title: 'OT Unit',
+    icon: 'accessibility_new',
+    files: [
+      {
+        name: 'Performa for Occupational Therapy Assessment Form.pdf',
+        size: '435 KB',
+        description: 'Initial assessment form used to evaluate the child\'s sensory and motor skills.',
+        path: '/documents/OT unit formats/Performa for Occupational Therapy Assessment Form.pdf',
+      },
+      {
+        name: 'Short Sensory Profile Samadhan.pdf',
+        size: '116 KB',
+        description: 'Sensory profile questionnaire to identify sensory processing challenges.',
+        path: '/documents/OT unit formats/Short Sensory Profile Samadhan.pdf',
+      },
+      {
+        name: 'Individulized Educational Program O.T.pdf',
+        size: '39 KB',
+        description: 'IEP goals and plans specifically designed for Occupational Therapy.',
+        path: '/documents/OT unit formats/Individulized Educational Program O.T.pdf',
+      },
+      {
+        name: 'O.T PERFORMACE REPORTS SUMMARY.pdf',
+        size: '199 KB',
+        description: 'Performance reports summary to track therapy progress.',
+        path: '/documents/OT unit formats/O.T PERFORMACE REPORTS SUMMARY.pdf',
+      },
+    ],
+  },
+  {
+    id: 'psychology',
+    title: 'Psychology',
+    icon: 'psychology',
+    files: [
+      {
+        name: 'Case History form.pdf',
+        size: '531 KB',
+        description: 'Comprehensive history form to record developmental and family background.',
+        path: '/documents/Psychology Unit Formats/Case History form.pdf',
+      },
+      {
+        name: 'Psychological assessment form.pdf',
+        size: '111 KB',
+        description: 'Form to capture psychological and cognitive evaluations.',
+        path: '/documents/Psychology Unit Formats/Psychological assessment form.pdf',
+      },
+    ],
+  },
+  {
+    id: 'special-ed',
+    title: 'Special Education',
+    icon: 'school',
+    files: [
+      {
+        name: 'FUNCTIONAL DEVELOPMENTAL ASSESSMENT CHECKLIST - Special Education.pdf',
+        size: '525 KB',
+        description: 'Checklist to assess functional development in special education.',
+        path: '/documents/Special Education Unit Formats/FUNCTIONAL DEVELOPMENTAL ASSESSMENT CHECKLIST - Special Education.pdf',
+      },
+      {
+        name: 'IEP QUARTERLY STG AND LTG PART II.pdf',
+        size: '194 KB',
+        description: 'Short-term and Long-term goals for Individualized Education Program.',
+        path: '/documents/Special Education Unit Formats/IEP QUARTERLY STG AND LTG PART II.pdf',
+      },
+      {
+        name: 'IEP QUARTERLY LESSON PLAN FORMAT PART III.pdf',
+        size: '343 KB',
+        description: 'Quarterly lesson plan templates for teachers and parents.',
+        path: '/documents/Special Education Unit Formats/IEP QUARTERLY LESSON PLAN FORMAT PART III.pdf',
+      },
+      {
+        name: 'IEP PERFORMACE REPORTS SUMMARY IV.pdf',
+        size: '317 KB',
+        description: 'Performance reports summary to track special education progress.',
+        path: '/documents/Special Education Unit Formats/IEP PERFORMACE REPORTS SUMMARY IV.pdf',
+      },
+      {
+        name: 'SEN-FC part I After Admission.pdf',
+        size: '371 KB',
+        description: 'Special Education Needs format part I (filled after admission).',
+        path: '/documents/Special Education Unit Formats/SEN-FC part I After Admission.pdf',
+      },
+      {
+        name: 'PVR-FC part I After Admission.pdf',
+        size: '186 KB',
+        description: 'Performance/Vocational Report format part I.',
+        path: '/documents/Special Education Unit Formats/PVR-FC part I After Admission.pdf',
+      },
+    ],
+  },
+  {
+    id: 'speech',
+    title: 'Speech Therapy',
+    icon: 'forum',
+    files: [
+      {
+        name: 'Speech and Language Assessment Screening Form.pdf',
+        size: '183 KB',
+        description: 'Screening form for initial speech and language evaluations.',
+        path: '/documents/Speech Therapy Unit Formats/Speech and Language Assessment Screening Form.pdf',
+      },
+      {
+        name: 'Speech therapy plan for Parents - Home Intervention.pdf',
+        size: '323 KB',
+        description: 'Guide and plan for home-based speech therapy exercises.',
+        path: '/documents/Speech Therapy Unit Formats/Speech therapy plan for Parents - Home Intervention.pdf',
+      },
+      {
+        name: 'Speech Therapy Intervention Guidance HI.pdf',
+        size: '24 KB',
+        description: 'Guidance for speech therapy targeted at hearing impairments.',
+        path: '/documents/Speech Therapy Unit Formats/Speech Therapy Intervention Guidance HI.pdf',
+      },
+      {
+        name: 'Speech Therapy Intervention Guidance MD.pdf',
+        size: '32 KB',
+        description: 'Guidance for speech therapy targeted at multiple disabilities.',
+        path: '/documents/Speech Therapy Unit Formats/Speech Therapy Intervention Guidance MD.pdf',
+      },
+      {
+        name: 'IEP Speech and Language Quarterly report.pdf',
+        size: '25 KB',
+        description: 'Quarterly report format for speech and language goals.',
+        path: '/documents/Speech Therapy Unit Formats/IEP Speech and Language Quarterly report.pdf',
+      },
+      {
+        name: 'Speech and Language Performance Reports Summary YEARLY.pdf',
+        size: '315 KB',
+        description: 'Yearly performance summary for speech therapy progress tracking.',
+        path: '/documents/Speech Therapy Unit Formats/Speech and Language Performance Reports Summary YEARLY.pdf',
+      },
+    ],
+  },
+];
+
 export const ApplicationForm: React.FC = () => {
   const [step, setStep] = useState(1);
   const [parentFirstName, setParentFirstName] = useState('');
   const [parentLastName, setParentLastName] = useState('');
   const [relationship, setRelationship] = useState('mother');
+  const [activeTemplateTab, setActiveTemplateTab] = useState<'ot' | 'psychology' | 'special-ed' | 'speech'>('ot');
 
   const [formData, setFormData] = useState<ApplicationFormData>({
     parentName: '',
@@ -21,6 +175,7 @@ export const ApplicationForm: React.FC = () => {
     certificateFile: null,
     aadhaarFile: null,
     medicalFile: null,
+    completedFormsFile: null,
   });
 
   const [errors, setErrors] = useState<FormFieldError[]>([]);
@@ -31,6 +186,7 @@ export const ApplicationForm: React.FC = () => {
   const certInputRef = useRef<HTMLInputElement>(null);
   const aadhaarInputRef = useRef<HTMLInputElement>(null);
   const medicalInputRef = useRef<HTMLInputElement>(null);
+  const completedFormsInputRef = useRef<HTMLInputElement>(null);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -158,6 +314,9 @@ export const ApplicationForm: React.FC = () => {
       if (formData.medicalFile) {
         apiPayload.append('medicalFile', formData.medicalFile);
       }
+      if (formData.completedFormsFile) {
+        apiPayload.append('completedFormsFile', formData.completedFormsFile);
+      }
 
       // Simulate a real API network latency
       await new Promise((resolve) => setTimeout(resolve, 2000));
@@ -183,6 +342,7 @@ export const ApplicationForm: React.FC = () => {
       certificateFile: null,
       aadhaarFile: null,
       medicalFile: null,
+      completedFormsFile: null,
     });
     setParentFirstName('');
     setParentLastName('');
@@ -526,9 +686,83 @@ export const ApplicationForm: React.FC = () => {
               <h2 className="font-headline-md text-headline-md text-primary mb-6">
                 Verification Documents
               </h2>
-              <p className="font-body-md text-body-md text-on-surface-variant">
-                Please upload the required verification credentials. They will be encrypted and transmitted securely.
-              </p>
+              
+              {/* Clinical Templates & Formats Section */}
+              <div className="bg-[#dde2ca]/10 border border-[#dde2ca]/40 rounded-2xl p-5 space-y-4 mb-6">
+                <h3 className="font-label-lg text-label-md text-primary uppercase tracking-wider font-bold flex items-center gap-1.5">
+                  <span className="material-symbols-outlined text-[20px]">download_for_offline</span>
+                  Step 1: Download Required Formats
+                </h3>
+                <p className="text-xs text-on-surface-variant leading-relaxed">
+                  Select your child's therapy unit to download the templates. Please fill them out and upload under the "Completed Therapy Unit Form(s)" field below.
+                </p>
+
+                {/* Stage/Tab Selector */}
+                <div className="flex flex-wrap gap-2 border-b border-surface-variant/40 pb-3">
+                  {TEMPLATE_CATEGORIES.map((category) => (
+                    <button
+                      key={category.id}
+                      type="button"
+                      onClick={() => setActiveTemplateTab(category.id)}
+                      className={`flex items-center gap-1.5 px-4 py-2 rounded-full font-label-md text-xs transition-all cursor-pointer ${
+                        activeTemplateTab === category.id
+                          ? 'bg-primary text-on-primary font-semibold shadow-sm'
+                          : 'bg-surface border border-surface-variant text-on-surface-variant hover:bg-surface-container'
+                      }`}
+                    >
+                      <span className="material-symbols-outlined text-[16px]">
+                        {category.icon}
+                      </span>
+                      <span>{category.title}</span>
+                    </button>
+                  ))}
+                </div>
+
+                {/* Selected Tab Files */}
+                <div className="space-y-2 mt-3 max-h-[220px] overflow-y-auto pr-1">
+                  {TEMPLATE_CATEGORIES.find((c) => c.id === activeTemplateTab)?.files.map((file) => (
+                    <div
+                      key={file.name}
+                      className="p-3 bg-surface rounded-xl border border-surface-variant/30 flex items-center justify-between gap-3 group hover:border-primary/30 transition-all"
+                    >
+                      <div className="flex-1 min-w-0">
+                        <h5 className="text-xs font-semibold text-on-surface flex items-center gap-1.5 truncate" title={file.name}>
+                          <span className="material-symbols-outlined text-[16px] text-secondary flex-shrink-0">
+                            picture_as_pdf
+                          </span>
+                          <span className="truncate">{file.name}</span>
+                        </h5>
+                        <p className="text-[10px] text-on-surface-variant mt-0.5 truncate">
+                          {file.description}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        <span className="text-[9px] text-on-surface-variant font-mono bg-surface-container-low px-1.5 py-0.5 rounded">
+                          {file.size}
+                        </span>
+                        <a
+                          href={file.path}
+                          download={file.name}
+                          className="bg-primary/5 hover:bg-primary text-primary hover:text-on-primary p-1.5 rounded-full flex items-center justify-center transition-all cursor-pointer"
+                          title="Download template"
+                        >
+                          <span className="material-symbols-outlined text-[16px]">download</span>
+                        </a>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="border-t border-surface-variant/30 pt-4">
+                <h3 className="font-label-lg text-label-md text-primary uppercase tracking-wider font-bold mb-3 flex items-center gap-1.5">
+                  <span className="material-symbols-outlined text-[20px]">cloud_upload</span>
+                  Step 2: Upload Documents
+                </h3>
+                <p className="font-body-md text-body-md text-on-surface-variant mb-4">
+                  Please upload the required verification credentials and any completed therapy formats. They will be encrypted and transmitted securely.
+                </p>
+              </div>
 
               {/* Disability Certificate */}
               <div className="space-y-2">
@@ -667,6 +901,51 @@ export const ApplicationForm: React.FC = () => {
                   )}
                 </div>
               </div>
+
+              {/* Completed Therapy Unit Forms (Optional) */}
+              <div className="space-y-2 pt-4 border-t border-surface-variant/20">
+                <label className="block text-label-lg font-semibold text-on-surface">
+                  Completed Therapy Unit Form(s) (Optional)
+                </label>
+                <p className="text-xs text-on-surface-variant">
+                  If you have filled out any downloaded therapy templates (e.g. Case History Form, O.T. Assessment, Speech Screening), please upload them here.
+                </p>
+                <div className="flex items-center space-x-4 mt-2">
+                  <input
+                    type="file"
+                    id="completedFormsFile"
+                    ref={completedFormsInputRef}
+                    className="hidden"
+                    accept=".pdf,.jpg,.jpeg,.png,.zip"
+                    onChange={(e) => handleFileChange(e, 'completedFormsFile')}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => completedFormsInputRef.current?.click()}
+                    className="flex items-center space-x-1.5 rounded-full px-5 py-2.5"
+                  >
+                    <span className="material-symbols-outlined text-[18px]">cloud_upload</span>
+                    <span>Choose File</span>
+                  </Button>
+                  {formData.completedFormsFile ? (
+                    <div className="flex items-center space-x-2 text-sm text-primary font-medium">
+                      <span className="truncate max-w-[200px]">{formData.completedFormsFile.name}</span>
+                      <button
+                        type="button"
+                        onClick={() => removeFile('completedFormsFile', completedFormsInputRef)}
+                        className="text-error hover:bg-error-container/20 p-1 rounded-full transition-colors flex items-center"
+                        aria-label="Remove filled unit form"
+                      >
+                        <span className="material-symbols-outlined text-[16px]">close</span>
+                      </button>
+                    </div>
+                  ) : (
+                    <span className="text-xs text-on-surface-variant">No file selected (PDF, JPG, PNG, ZIP)</span>
+                  )}
+                </div>
+              </div>
             </div>
           )}
 
@@ -750,6 +1029,13 @@ export const ApplicationForm: React.FC = () => {
                         <span className="material-symbols-outlined text-primary">medical_information</span>
                         <span className="font-medium text-on-surface-variant">Medical Report:</span>
                         <span className="font-bold">{formData.medicalFile.name}</span>
+                      </div>
+                    )}
+                    {formData.completedFormsFile && (
+                      <div className="flex items-center space-x-2">
+                        <span className="material-symbols-outlined text-primary">assignment_turned_in</span>
+                        <span className="font-medium text-on-surface-variant">Completed Unit Forms:</span>
+                        <span className="font-bold">{formData.completedFormsFile.name}</span>
                       </div>
                     )}
                   </div>
