@@ -12,11 +12,36 @@ export const ContactClient: React.FC = () => {
     message: '',
   });
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
+    setIsSubmitting(true);
+    setErrorMessage('');
+
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to submit contact request.');
+      }
+
+      setSubmitted(true);
+    } catch (err: unknown) {
+      setErrorMessage(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -44,7 +69,7 @@ export const ContactClient: React.FC = () => {
           </div>
         </div>
 
-        {/* RIGHT COLUMN: White Card Form (Fit within view) */}
+        {/* RIGHT COLUMN: White Card Form */}
         <div className="lg:col-span-7">
           <div className="bg-white rounded-2xl p-5 sm:p-7 lg:p-8 shadow-2xl text-slate-900 border border-slate-100 text-left">
             <h2 className="font-headline-md text-xl sm:text-2xl font-bold text-slate-900 mb-4">
@@ -70,6 +95,13 @@ export const ContactClient: React.FC = () => {
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-3.5">
+                {errorMessage && (
+                  <div className="p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-xs flex items-center gap-2">
+                    <span className="material-symbols-outlined text-base">error</span>
+                    <span>{errorMessage}</span>
+                  </div>
+                )}
+
                 {/* 2-Column Grid: Name & Mobile */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
@@ -169,10 +201,13 @@ export const ContactClient: React.FC = () => {
                 <div className="pt-1">
                   <button
                     type="submit"
-                    className="bg-[#0f4d32] hover:bg-[#0b3b26] text-white font-semibold px-7 py-2.5 rounded-lg shadow-md transition-all active:scale-95 inline-flex items-center gap-2 text-sm"
+                    disabled={isSubmitting}
+                    className="bg-[#0f4d32] hover:bg-[#0b3b26] text-white font-semibold px-7 py-2.5 rounded-lg shadow-md transition-all active:scale-95 inline-flex items-center gap-2 text-sm disabled:opacity-50"
                   >
-                    <span>Submit</span>
-                    <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+                    <span>{isSubmitting ? 'Submitting...' : 'Submit'}</span>
+                    {!isSubmitting && (
+                      <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+                    )}
                   </button>
                   <p className="text-[11px] text-slate-500 mt-2 font-medium">
                     We’ll get back to you soon.

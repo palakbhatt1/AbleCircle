@@ -47,3 +47,7 @@ CLAUDE.md
 # Documentation
 doc/
 
+# User uploads & database
+/data/
+/public/uploads/
+

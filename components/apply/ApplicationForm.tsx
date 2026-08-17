@@ -318,8 +318,16 @@ export const ApplicationForm: React.FC = () => {
         apiPayload.append('completedFormsFile', formData.completedFormsFile);
       }
 
-      // Simulate a real API network latency
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      const response = await fetch('/api/apply', {
+        method: 'POST',
+        body: apiPayload,
+      });
+
+      const resData = await response.json();
+
+      if (!response.ok) {
+        throw new Error(resData.error || 'Failed to submit application. Please try again.');
+      }
 
       setSubmitStatus('success');
     } catch (err: unknown) {
