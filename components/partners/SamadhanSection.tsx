@@ -2,13 +2,8 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { CollageGallery, CollageFrameItem } from './CollageGallery';
 
-interface SamadhanSectionProps {
-  customCollageImages?: Partial<Record<'frame1' | 'frame2' | 'frame3' | 'frame4' | 'frame5', CollageFrameItem>>;
-}
-
-export const SamadhanSection: React.FC<SamadhanSectionProps> = ({ customCollageImages }) => {
+export const SamadhanSection: React.FC = () => {
   return (
     <div className="w-full">
       {/* FULL-WIDTH HERO SECTION */}
@@ -46,13 +41,22 @@ export const SamadhanSection: React.FC<SamadhanSectionProps> = ({ customCollageI
             Established in 1981 in New Delhi, Samadhan India is a non-profit organization focused on improving the lives of persons with intellectual disabilities, particularly those from low-income communities, and their mothers.
           </p>
 
-          {/* Theme-aligned Button */}
-          <Link href="/apply">
-            <button className="bg-primary text-on-primary font-label-md text-xs md:text-sm px-6 py-3 rounded-full hover:bg-primary/90 transition-all shadow-md inline-flex items-center gap-2 font-semibold active:scale-95">
-              <span>Partner with us</span>
-              <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
-            </button>
-          </Link>
+          {/* Action Buttons */}
+          <div className="flex flex-wrap items-center gap-3 md:gap-4">
+            <Link href="/apply">
+              <button className="bg-primary text-on-primary font-label-md text-xs md:text-sm px-5 py-2.5 md:px-6 md:py-3 rounded-full hover:bg-primary/90 transition-all shadow-md inline-flex items-center gap-2 font-semibold active:scale-95">
+                <span>Apply at SAMADHAN</span>
+                <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+              </button>
+            </Link>
+
+            <Link href="/contact">
+              <button className="border-2 border-primary text-primary hover:bg-primary/5 font-label-md text-xs md:text-sm px-5 py-2.5 md:px-6 md:py-3 rounded-full transition-all inline-flex items-center gap-2 font-semibold active:scale-95">
+                <span>Partner with us</span>
+                <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+              </button>
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -125,9 +129,6 @@ export const SamadhanSection: React.FC<SamadhanSectionProps> = ({ customCollageI
           </div>
         </div>
       </div>
-
-      {/* FULL-WIDTH PHOTO COLLAGE (Extends edge-to-edge across the screen like hero section) */}
-      <CollageGallery customImages={customCollageImages} />
     </div>
   );
 };

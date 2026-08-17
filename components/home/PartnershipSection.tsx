@@ -25,7 +25,7 @@ export const PartnershipSection: React.FC = () => {
             {PARTNERSHIP_CONTENT.description}
           </p>
           <Link
-            href="/apply"
+            href="/contact"
             className="text-primary font-label-md text-label-md inline-flex items-center hover:underline decoration-2 underline-offset-4"
           >
             <span>{PARTNERSHIP_CONTENT.ctaText}</span>

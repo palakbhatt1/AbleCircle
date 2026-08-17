@@ -2,11 +2,12 @@
 
 import React, { useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { DotLottiePlayer } from '@dotlottie/react-player';
 import { SamadhanSection } from './SamadhanSection';
-import { CollageFrameItem } from './CollageGallery';
+import { CollageGallery, CollageFrameItem } from './CollageGallery';
 
 interface PartnersClientProps {
-  customCollageImages?: Partial<Record<'frame1' | 'frame2' | 'frame3' | 'frame4' | 'frame5', CollageFrameItem>>;
+  customCollageImages?: CollageFrameItem[];
 }
 
 export const PartnersClient: React.FC<PartnersClientProps> = ({ customCollageImages }) => {
@@ -45,25 +46,44 @@ export const PartnersClient: React.FC<PartnersClientProps> = ({ customCollageIma
 
   return (
     <div ref={containerRef} className="relative bg-background overflow-x-hidden min-h-screen">
-      {/* Full-width Hero Banner & SAMADHAN Content */}
-      <SamadhanSection customCollageImages={customCollageImages} />
+      {/* 1. Full-width Hero Banner & What does SAMADHAN do? */}
+      <SamadhanSection />
 
-      {/* Future Partners CTA (Matching original design) */}
-      <section className="max-w-container-max mx-auto px-margin-mobile md:px-lg pb-24 reveal-on-scroll">
-        <div className="bg-secondary-container rounded-[40px] p-8 md:p-16 text-center shadow-inner">
-          <h2 className="font-headline-lg text-headline-lg text-on-secondary-container mb-4">
-            Join Our Circle of Care
-          </h2>
-          <p className="font-body-md text-body-md text-on-secondary-container max-w-xl mx-auto mb-8 leading-relaxed">
-            Are you an organization dedicated to supporting families and individuals with intellectual disabilities? Let's work together to create a more inclusive and accessible ecosystem.
-          </p>
-          <Link href="/apply">
-            <button className="bg-primary text-on-primary font-label-lg text-label-lg px-8 py-3 rounded-full hover:bg-primary/90 transition-colors shadow-md active:scale-95 duration-150">
-              Become a Partner
-            </button>
-          </Link>
+      {/* 2. Partners CTA - Join Our Circle of Care (MOVED ABOVE THE COLLAGE) */}
+      <section className="max-w-container-max mx-auto px-margin-mobile md:px-lg py-12 border-t border-outline-variant/30 reveal-on-scroll">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+          {/* Left Text Column */}
+          <div className="lg:col-span-7 text-left">
+            <h2 className="font-headline-lg text-3xl md:text-4xl text-primary font-bold mb-4">
+              Join Our Circle of Care
+            </h2>
+            <p className="font-body-lg text-base md:text-lg text-on-surface-variant mb-8 leading-relaxed">
+              Are you an organization dedicated to supporting families and individuals with intellectual disabilities? Let's work together to create a more inclusive and accessible ecosystem.
+            </p>
+            <Link href="/contact">
+              <button className="bg-primary text-on-primary font-label-md text-sm px-8 py-3 rounded-full hover:bg-primary/90 transition-colors shadow-md active:scale-95 duration-150 inline-flex items-center gap-2 font-semibold">
+                <span>Become a Partner</span>
+                <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+              </button>
+            </Link>
+          </div>
+
+          {/* Right Animation Column */}
+          <div className="lg:col-span-5 flex justify-center lg:justify-end">
+            <div className="w-64 h-64 md:w-80 md:h-80 lg:w-96 lg:h-96">
+              <DotLottiePlayer
+                src="/assets/Enjoying the fun time.json"
+                autoplay
+                loop
+                style={{ width: '100%', height: '100%' }}
+              />
+            </div>
+          </div>
         </div>
       </section>
+
+      {/* 3. Full-width Photo Collage (Now positioned below Join Our Circle of Care) */}
+      <CollageGallery customImages={customCollageImages} />
     </div>
   );
 };
